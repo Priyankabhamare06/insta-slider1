@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultimate Insta Slider</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+
+body{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#fd1d1d,#833ab4,#fcb045);
+}
+
+.slider{
+  width:420px;
+  height:640px;
+  background:#000;
+  border-radius:30px;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 30px 70px rgba(0,0,0,0.6);
+}
+
+.slides{
+  display:flex;
+  height:100%;
+  transition:transform 0.8s ease;
+}
+
+.slides img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  flex-shrink:0;
+}
+
+/* Progress bars */
+.progress{
+  position:absolute;
+  top:12px;
+  left:12px;
+  right:12px;
+  display:flex;
+  gap:6px;
+  z-index:10;
+}
+
+.bar{
+  flex:1;
+  height:4px;
+  background:rgba(255,255,255,0.3);
+  border-radius:4px;
+  overflow:hidden;
+}
+
+.bar span{
+  display:block;
+  height:100%;
+  width:0;
+  background:#fff;
+  animation:fill 3.5s linear forwards;
+}
+
+@keyframes fill{from{width:0}to{width:100%}}
+
+.caption{
+  position:absolute;
+  bottom:25px;
+  left:20px;
+  color:white;
+  font-size:20px;
+  background:rgba(0,0,0,0.45);
+  padding:12px 22px;
+  border-radius:25px;
+}
+
+/* Big colorful hearts */
+.heart{
+  position:absolute;
+  bottom:120px;
+  font-size:42px;
+  animation:float 3s ease-out forwards;
+  pointer-events:none;
+}
+
+@keyframes float{
+  0%{opacity:0;transform:translateY(0) scale(0.6)}
+  20%{opacity:1}
+  100%{opacity:0;transform:translateY(-240px) scale(1.6)}
+}
+
+.audio-btn{
+  position:absolute;
+  top:50px;
+  right:15px;
+  background:rgba(0,0,0,0.6);
+  color:white;
+  border:none;
+  padding:8px 14px;
+  border-radius:20px;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="slider" id="slider">
+  <div class="progress" id="progress"></div>
+
+  <div class="slides" id="slides">
+    <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80">
+    <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80">
+    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80">
+    <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80">
+  </div>
+
+  <div class="caption" id="caption">Natural Beauty 🌿</div>
+  <button class="audio-btn" id="audioBtn">🔊</button>
+</div>
+
+<audio id="bgMusic" loop>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const slides = document.getElementById('slides');
+const progress = document.getElementById('progress');
+const caption = document.getElementById('caption');
+const slider = document.getElementById('slider');
+const audio = document.getElementById('bgMusic');
+const audioBtn = document.getElementById('audioBtn');
+
+const captions = [
+  'Natural Beauty 🌿',
+  'Mountain Love ⛰️',
+  'Ocean Vibes 🌊',
+  'Peaceful Mood 💜'
+];
+
+const colors = ['#ff3b6f','#ffdd00','#00e5ff','#b388ff','#69f0ae'];
+let index = 0;
+const total = captions.length;
+
+function createBars(){
+  progress.innerHTML='';
+  for(let i=0;i<total;i++){
+    const bar=document.createElement('div');
+    bar.className='bar';
+    if(i===index){
+      const span=document.createElement('span');
+      bar.appendChild(span);
+    }
+    progress.appendChild(bar);
+  }
+}
+
+function showSlide(){
+  slides.style.transform=`translateX(-${index*100}%)`;
+  caption.textContent=captions[index];
+  createBars();
+}
+
+function createHeart(x){
+  const heart=document.createElement('div');
+  heart.className='heart';
+  heart.innerHTML='❤';
+  heart.style.color = colors[Math.floor(Math.random()*colors.length)];
+  heart.style.left = x + 'px';
+  slider.appendChild(heart);
+  setTimeout(()=>heart.remove(),3000);
+}
+
+slider.addEventListener('click',(e)=>{
+  const rect=slider.getBoundingClientRect();
+  createHeart(e.clientX-rect.left);
+});
+
+slider.addEventListener('touchstart',(e)=>{
+  const rect=slider.getBoundingClientRect();
+  createHeart(e.touches[0].clientX-rect.left);
+});
+
+audioBtn.addEventListener('click',()=>{
+  if(audio.paused){audio.play();audioBtn.textContent='🔈';}
+  else{audio.pause();audioBtn.textContent='🔊';}
+});
+
+setInterval(()=>{
+  index=(index+1)%total;
+  showSlide();
+},3500);
+
+showSlide();
+</script>
+
+</body>
+</html>
